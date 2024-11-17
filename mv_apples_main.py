@@ -148,71 +148,72 @@ def threshold_yuv(img):
     return binary_image
 
 
+#Use section below for single or mupliple image - comment/uncomment respectively
 
-
-# ---------Single Image Start-------------------------------------------------------
-def main():
-    # Load the pre-segmented black and white image
-    filepath = os.getcwd() + "/dataset/validation/5.png"
-    img = cv.imread(filepath, cv.IMREAD_COLOR)
-    original_image = img
-
-    img = extend_image(img, extension_pixels)
-    original_image = extend_image(original_image, extension_pixels)
-
-    if img is None:
-        print(f"Error: Unable to read the image at '{filepath}'")
-        return
-
-    # Threshold and process the image
-    binary_result = threshold_yuv(img)
-
-    # Detect circles in the processed binary image and draw on the original image
-    result_image = detect_circles(binary_result, original_image)
-
-    if result_image is not None:
-        # Display the result (convert to BGR before display)
-        cv.imshow("Circles Detected", result_image)
-        cv.waitKey(0)
-        cv.destroyAllWindows()
-    else:
-        print("No circles detected or error occurred.")
-
-if __name__ == "__main__":
-    main()
-
-# ---------Single Image End-------------------------------------------------------
-
-
-
-# # ---------Multi Image Start-------------------------------------------------------
-# # Directory where images are located
-# image_dir = "C:/Users/nikla/OneDrive/Documents/Mechatronics/282.762 Robotics/Assesment 3 - Machine Vision/dataset/validation"
-
-# # Iterate through images "0.png" to "29.png"
-# for i in range(30):
-#     filename = os.path.join(image_dir, f"{i}.png")
-
-#     # Load the image
-#     img = cv.imread(filename, cv.IMREAD_COLOR)
+# # ---------Single Image Start-------------------------------------------------------
+# def main():
+#     # Load the pre-segmented black and white image
+#     filepath = os.getcwd() + "/validation/5.png"
+#     img = cv.imread(filepath, cv.IMREAD_COLOR)
 #     original_image = img
-
-#     if img is None:
-#         print(f"Error: Unable to read the image at '{image_dir}'")
-#         continue
 
 #     img = extend_image(img, extension_pixels)
 #     original_image = extend_image(original_image, extension_pixels)
 
+#     if img is None:
+#         print(f"Error: Unable to read the image at '{filepath}'")
+#         return
+
 #     # Threshold and process the image
 #     binary_result = threshold_yuv(img)
+
+#     # Detect circles in the processed binary image and draw on the original image
 #     result_image = detect_circles(binary_result, original_image)
-#     # Save the resulting image with circles detected
-#     output_filename = os.path.join(image_dir, f"{i}_circle.png")
-#     cv.imwrite(output_filename, result_image)
 
-#     print(f"Processed and saved {output_filename}")
+#     if result_image is not None:
+#         # Display the result (convert to BGR before display)
+#         cv.imshow("Circles Detected", result_image)
+#         cv.waitKey(0)
+#         cv.destroyAllWindows()
+#     else:
+#         print("No circles detected or error occurred.")
 
-# print("Processing complete.")
+# if __name__ == "__main__":
+#     main()
 
-# # ---------Multi Image End-------------------------------------------------------
+# # ---------Single Image End-------------------------------------------------------
+
+
+
+# ---------Multi Image Start-------------------------------------------------------
+# Directory where images are located
+#image_dir = "C:/Users/nikla/OneDrive/Documents/Mechatronics/282.762 Robotics/Assesment 3 - Machine Vision/dataset/validation"
+filepath = os.getcwd()
+image_dir = os.path.join(filepath, "validation")
+# Iterate through images "0.png" to "29.png"
+for i in range(30):
+    filename = os.path.join(image_dir, f"{i}.png")
+
+    # Load the image
+    img = cv.imread(filename, cv.IMREAD_COLOR)
+    original_image = img
+
+    if img is None:
+        print(f"Error: Unable to read the image at '{image_dir}'")
+        continue
+
+    img = extend_image(img, extension_pixels)
+    original_image = extend_image(original_image, extension_pixels)
+
+    # Threshold and process the image
+    binary_result = threshold_yuv(img)
+    result_image = detect_circles(binary_result, original_image)
+    # Save the resulting image with circles detected
+    output_filename = os.path.join(image_dir, f"{i}_circle.png")
+    cv.imwrite(output_filename, result_image)
+
+    print(f"Processed and saved {output_filename}")
+
+print("Processing complete.")
+
+# ---------Multi Image End-------------------------------------------------------
