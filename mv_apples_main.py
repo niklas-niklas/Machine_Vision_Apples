@@ -10,7 +10,7 @@ image_count = 30        # Set number to however many images are in database to b
 
 def extend_image(image, extension_pixels):
     """
-    Extends the borders of an image by a specified number of pixels, filling the extended area with white.
+    Extends the borders of an image by a specified number of pixels (extension_pixels 200px), filling the extended area with white.
     
     Parameters:
         image (numpy.ndarray): The original image as a NumPy array, typically in shape (height, width, channels).
@@ -278,9 +278,12 @@ def process_multiple_images():
     print("Processing complete.")
 
 def main():
+    # Select if single or multiple images should be processed
     if output_mode == 0:
+        # Process image with number image_number
         process_single_image()
     elif output_mode == 1:
+        # Process images up to count image_count
         process_multiple_images()
     else:
         print("Invalid output_mode. Please use 0 for single image or 1 for multiple images.")
