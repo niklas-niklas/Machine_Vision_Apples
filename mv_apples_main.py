@@ -5,7 +5,7 @@ import numpy as np
 extension_pixels = 200
 debug_state = True      # Set to False for normal operation, True for debugging mode
 output_mode = 0         # Set to 0 for single image, 1 for multiple images
-image_number = 19        # Set number to whichever required for single image output
+image_number = 1        # Set number to whichever required for single image output
 image_count = 30        # Set number to however many images are in database to be analysed
 
 def extend_image(image, extension_pixels):
@@ -49,13 +49,17 @@ def detect_circles(img, original_image):
         numpy.ndarray: Annotated image with valid circles, or the original image if no circles are detected.
     """
     # Variables for adjusting the black percentage within a circle to be counted as an apple
-    max_black_percentage = 62
-    min_black_percentage = 10
+    max_black_percentage = 62       # Working: 62
+    min_black_percentage = 10       # Working: 10
+    circle_thickness = 3            # Working: 3
+    medianblur_kernel = 5           # Working: 5
+    gaussianblur_kernel = 3         # Working: 3
+    gaussian_standarddev = 2        # Working: 2
 
     # Ensure input image is single-channel (grayscale)
     gray = np.where(img > 0, 255, 0).astype(np.uint8)
-    mblur = cv.medianBlur(gray, 5)
-    gblur = cv.GaussianBlur(mblur, (3, 3), 2)
+    mblur = cv.medianBlur(gray, medianblur_kernel)
+    gblur = cv.GaussianBlur(mblur, (gaussianblur_kernel, gaussianblur_kernel), gaussian_standarddev)
 
     # Apply Hough Circle Transform with adjusted parameters
     circles = cv.HoughCircles(
@@ -71,6 +75,7 @@ def detect_circles(img, original_image):
 
     if circles is not None:
         circles = np.uint16(np.around(circles))
+        text_position_offset = 20
 
         # Draw detected circles on the original image
         draw = original_image.copy()  # Use original image directly for drawing
@@ -93,16 +98,16 @@ def detect_circles(img, original_image):
             # Draw circle only if majority of pixels are black (apples)
             if black_percentage > max_black_percentage:
                 # Draw the full circle in red
-                cv.circle(draw, center, radius, (0, 0, 255), 3)
+                cv.circle(draw, center, radius, (0, 0, 255), circle_thickness)
 
                 # Draw the center
-                cv.circle(draw, center, 2, (0, 255, 0), 3)
+                cv.circle(draw, center, 2, (0, 255, 0), circle_thickness)
 
                 # Annotate with black pixel percentage
                 cv.putText(
                     draw,
                     f"Circle {idx}: | Black Pixels: {black_percentage:.2f}% | Radius: {radius:.2f}",
-                    (circle[0] - radius, circle[1] - radius - 20),
+                    (circle[0] - radius, circle[1] - radius - text_position_offset),
                     cv.FONT_HERSHEY_SIMPLEX,
                     0.4,
                     (0, 0, 255), 
@@ -114,16 +119,16 @@ def detect_circles(img, original_image):
                 img_height, img_width = img.shape[:2]
 
                 if (center[0] + radius > img_width - extension_pixels or center[0] - radius < extension_pixels or center[1] + radius > img_height - extension_pixels or center[1] - radius < extension_pixels):
-                    cv.circle(draw, center, radius, (0, 0, 255), 3)
+                    cv.circle(draw, center, radius, (0, 0, 255), circle_thickness)
 
                     # Draw the center
-                    cv.circle(draw, center, 2, (0, 255, 0), 3)
+                    cv.circle(draw, center, 2, (0, 255, 0), circle_thickness)
 
                     # Annotate with black pixel percentage
                     cv.putText(
                         draw,
                         f"Circle {idx}: | Black Pixels: {black_percentage:.2f}% | Radius: {radius:.2f}",
-                        (circle[0] - radius, circle[1] - radius - 20),
+                        (circle[0] - radius, circle[1] - radius - text_position_offset),
                         cv.FONT_HERSHEY_SIMPLEX,
                         0.4,
                         (0, 0, 255), 
@@ -139,16 +144,16 @@ def detect_circles(img, original_image):
 
             if black_percentage < min_black_percentage:
                 # Draw the full circle in blue
-                cv.circle(draw, center, radius, (255, 0, 0), 3)
+                cv.circle(draw, center, radius, (255, 0, 0), circle_thickness)
 
                 # Draw the center
-                cv.circle(draw, center, 2, (0, 255, 0), 3)
+                cv.circle(draw, center, 2, (0, 255, 0), circle_thickness)
 
                 # Annotate with black pixel percentage
                 cv.putText(
                     draw,
                     f"Circle {idx}: | Black Pixels: {black_percentage:.2f}% | Radius: {radius:.2f}",
-                    (circle[0] - radius, circle[1] - radius - 20),
+                    (circle[0] - radius, circle[1] - radius - text_position_offset),
                     cv.FONT_HERSHEY_SIMPLEX,
                     0.3,
                     (255, 0, 0),
